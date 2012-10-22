@@ -40,6 +40,7 @@ Container.DefaultContainer = ()=> new MyAwesomeContainer();
 I like Munq. It's fast enough and it's simple. But it has a few problems, 
 mainly summed up [here](http://munq.codeplex.com/workitem/7131). It doesn't sound
 like a big deal, but it boils down to having to wrap resolutions in a try/catch,
-which is terrible for high-performing applications. By embedding Munq I can
-fix these issues. If the author ever patches it, I'll be happy to take on a 
-dependency.
+which is terrible for high-performing applications. The Munq that ships as the 
+default container will not throw exceptions, making it more suitable for rapid
+resolution and cheap tests using `CanResolve`. If the author ever patches it, I'll be 
+happy to take on a dependency.
