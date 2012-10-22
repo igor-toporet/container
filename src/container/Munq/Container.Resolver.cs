@@ -37,81 +37,74 @@ namespace Munq
             {
                 return registration.GetInstance();
             }
-		    var arbitrary = HandleUnResolved(null, name, type);
+		    var arbitrary = HandleUnResolved(name, type);
 		    return arbitrary;
 		}
 
-        private object HandleUnResolved(Exception knfe, string name, Type type)
+        private object HandleUnResolved(string name, Type type)
 		{
 			if (type.IsGenericType)
 			{
-				object result = ResolveUsingOpenType(knfe, name, type);
+				var result = ResolveUsingOpenType(name, type);
 				if (result!=null)
-					return result;
-			}
-
-			if (type.IsClass)
-			{
-				try
 				{
-					var func = CreateInstanceDelegateFactory.Create(type);
-					Register(name, type, func);
-					// Thanks to dfullerton for catching this.
-					return typeRegistry.Get(name, type).GetInstance();
-				}
-				catch
-				{
-					throw new KeyNotFoundException(ResolveFailureMessage(type), knfe);
+				    return result;
 				}
 			}
 
-			if (type.IsInterface)
+            if (type.IsClass)
+            {
+                var func = CreateInstanceDelegateFactory.Create(type);
+                Register(name, type, func);
+                // Thanks to dfullerton for catching this.
+                return typeRegistry.Get(name, type).GetInstance();
+            }
+
+            if (type.IsInterface)
 			{
 				var regs = typeRegistry.GetDerived(name, type);
 				var reg = regs.FirstOrDefault();
 				if (reg != null)
 				{
-					object instance = reg.GetInstance();
+					var instance = reg.GetInstance();
 					Register(name, type, (c) => c.Resolve(name, instance.GetType()));
 					return instance;
 				}
-				else
-					throw new KeyNotFoundException(ResolveFailureMessage(type), knfe);
 			}
-			throw new KeyNotFoundException(ResolveFailureMessage(type), knfe);
+            return null;
 		}
 
-		private object ResolveUsingOpenType(Exception knfe, string name, Type type)
+		private object ResolveUsingOpenType(string name, Type type)
 		{
-			if (type.ContainsGenericParameters)
-				throw new KeyNotFoundException(ResolveFailureMessage(type), knfe);
-			else
-			{
-				// Look for an Open Type Definition registration
-				// create a type using the registered Open Type
-				// Try and resolve this type
-				var definition = type.GetGenericTypeDefinition();
-				var arguments  = type.GetGenericArguments();
-				if (opentypeRegistry.ContainsKey(name, definition))
-				{
-					var reg      = opentypeRegistry.Get(name, definition);
-					var implType = reg.ImplType;
-					var newType  = implType.MakeGenericType(arguments);
-					try
-					{
-						if (CanResolve(name, newType))
-							return Resolve(name, newType);
+            if (type.ContainsGenericParameters)
+            {
+                return null;
+            }
+            
+		    // Look for an Open Type Definition registration
+		    // create a type using the registered Open Type
+		    // Try and resolve this type
+		    var definition = type.GetGenericTypeDefinition();
+		    var arguments = type.GetGenericArguments();
+		    if (opentypeRegistry.ContainsKey(name, definition))
+		    {
+		        var reg = opentypeRegistry.Get(name, definition);
+		        var implType = reg.ImplType;
+		        var newType = implType.MakeGenericType(arguments);
+		        try
+		        {
+		            if (CanResolve(name, newType))
+		                return Resolve(name, newType);
 
-						Register(name, type, newType).WithLifetimeManager(reg.LifetimeManager);
-						return typeRegistry.Get(name, type).GetInstance();
-					}
-					catch
-					{
-						return null;
-					}
-				}
-			}
-			return null;
+		            Register(name, type, newType).WithLifetimeManager(reg.LifetimeManager);
+		            return typeRegistry.Get(name, type).GetInstance();
+		        }
+		        catch
+		        {
+		            return null;
+		        }
+		    }
+		    return null;
 		}
 		
 		/// <include file='XmlDocumentation/IDependencyResolver.xml' path='IDependencyResolver/Members[@name="CanResolve1"]/*' />

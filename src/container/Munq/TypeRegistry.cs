@@ -27,7 +27,7 @@ namespace Munq
 
 		public Registration Get(string name, Type type)
 		{
-			IRegistrationKey key = MakeKey(name, type);
+			var key = MakeKey(name, type);
 		    Registration registration;
 		    typeRegistrations.TryGetValue(key, out registration);
 		    return registration;
@@ -68,7 +68,7 @@ namespace Munq
 
 		private static IRegistrationKey MakeKey(string name, Type type)
 		{
-			return (name == null ? (IRegistrationKey)new UnNamedRegistrationKey(type)
+			return (name == null ? new UnNamedRegistrationKey(type)
 								 : (IRegistrationKey)new NamedRegistrationKey(name, type));
 		}
 

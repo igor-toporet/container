@@ -34,9 +34,17 @@ namespace container.Tests
         [Test]
         public void Null_resolutions_do_not_result_in_exceptions()
         {
+            // Simple case of missing dependency
             var container = new Container();
             var foo = container.Resolve<IFoo>();
             Assert.IsNull(foo);
+
+            // Advanced case of missing inner dependency on registered type
+            container = new Container();
+            container.Register(r => new Bar(r.Resolve<IFoo>()));
+            var bar = container.Resolve<Bar>();
+            Assert.IsNotNull(bar);
+            Assert.IsNull(bar.Foo);
         }
 
         public interface IFoo
@@ -49,16 +57,16 @@ namespace container.Tests
         }
         public class Bar
         {
-            private readonly IFoo _foo;
+            public IFoo Foo { get; private set; }
 
             public Bar(IFoo foo)
             {
-                _foo = foo;
+                Foo = foo;
             }
 
             public void Baz()
             {
-                Console.WriteLine(_foo);
+                Console.WriteLine(Foo);
             }
         }
     }
