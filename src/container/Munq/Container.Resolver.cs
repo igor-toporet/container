@@ -32,18 +32,16 @@ namespace Munq
 		/// <include file='XmlDocumentation/IDependencyResolver.xml' path='IDependencyResolver/Members[@name="Resolve4"]/*' />
 		public object Resolve(string name, Type type)
 		{
-			try
-			{
-				return typeRegistry.Get(name, type).GetInstance();
-			}
-			catch (KeyNotFoundException knfe)
-			{
-				return HandleUnResolved(knfe, name, type);
-			}
-
+			var registration = typeRegistry.Get(name, type);
+            if(registration != null)
+            {
+                return registration.GetInstance();
+            }
+		    var arbitrary = HandleUnResolved(null, name, type);
+		    return arbitrary;
 		}
 
-		private object HandleUnResolved(Exception knfe, string name, Type type)
+        private object HandleUnResolved(Exception knfe, string name, Type type)
 		{
 			if (type.IsGenericType)
 			{
@@ -139,7 +137,8 @@ namespace Munq
 		/// <include file='XmlDocumentation/IDependencyResolver.xml' path='IDependencyResolver/Members[@name="CanResolve4"]/*' />
 		public bool CanResolve(string name, Type type)
 		{
-			return typeRegistry.ContainsKey(name, type);
+			var @explicit = typeRegistry.ContainsKey(name, type);
+		    return @explicit || Resolve(name, type) != null;
 		}
 		
 		/// <include file='XmlDocumentation/IDependencyResolver.xml' path='IDependencyResolver/Members[@name="ResolveAll1"]/*' />

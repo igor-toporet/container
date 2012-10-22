@@ -28,7 +28,9 @@ namespace Munq
 		public Registration Get(string name, Type type)
 		{
 			IRegistrationKey key = MakeKey(name, type);
-			return typeRegistrations[key];
+		    Registration registration;
+		    typeRegistrations.TryGetValue(key, out registration);
+		    return registration;
 		}
 
         public IEnumerable<Registration> GetDerived(string name, Type type)

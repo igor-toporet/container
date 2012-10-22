@@ -71,13 +71,13 @@ namespace container
         {
             return _registrar.Register(name, builder);
         }
-        public void Remove<T>() where T : class
+        public bool Remove<T>() where T : class
         {
-            _registrar.Remove<T>();
+            return _registrar.Remove<T>();
         }
-        public void Remove<T>(string name) where T : class
+        public bool Remove<T>(string name) where T : class
         {
-            _registrar.Remove<T>(name);
+            return _registrar.Remove<T>(name);
         }
         public void Dispose()
         {

@@ -17,16 +17,7 @@ namespace container
         }
         public T Resolve<T>() where T : class
         {
-            // CanResolve would be ideal but it returns false for arbitrary types :(
-            //return _container.CanResolve<T>() ? _container.Resolve<T>() : null;
-            try
-            {
-                return _container.Resolve<T>();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return _container.CanResolve<T>() ? _container.Resolve<T>() : null;
         }
         public T Resolve<T>(string name) where T : class
         {
@@ -38,16 +29,7 @@ namespace container
         }
         public object Resolve(Type serviceType)
         {
-            // CanResolve would be ideal but it returns false for arbitrary types :(
-            //return _container.CanResolve(serviceType) ? _container.Resolve(serviceType) : null;
-            try
-            {
-                return _container.Resolve(serviceType);
-            }
-            catch (Exception)
-            {
-               return null;
-            }
+            return _container.CanResolve(serviceType) ? _container.Resolve(serviceType) : null;
         }
         public object Resolve(Type serviceType, string name)
         {
@@ -77,31 +59,19 @@ namespace container
         {
             return new DefaultLifetime(_container.Register(name, r => builder(this)));
         }
-        public void Remove<T>() where T : class
+        public bool Remove<T>() where T : class
         {
-            try
-            {
-                var registration = _container.GetRegistration<T>();
-                if (registration == null) return;
-                _container.Remove(registration);
-            }
-            catch
-            {
-                // So lame... throws an exception when registration can't be found.
-            }
+            var registration = _container.GetRegistration<T>();
+            if (registration == null) return false;
+            _container.Remove(registration);
+            return true;
         }
-        public void Remove<T>(string name) where T : class
+        public bool Remove<T>(string name) where T : class
         {
-            try
-            {
-                var registration = _container.GetRegistration<T>(name);
-                if (registration == null) return;
-                _container.Remove(registration);
-            }
-            catch
-            {
-                // So lame... throws an exception when registration can't be found.
-            }
+            var registration = _container.GetRegistration<T>(name);
+            if (registration == null) return false;
+            _container.Remove(registration);
+            return true;
         }
         public void Dispose()
         {

@@ -134,14 +134,7 @@ namespace Munq
 		/// <inheritdoc />
 		public IRegistration GetRegistration(string name, Type type)
 		{
-			try
-			{
-				return typeRegistry.Get(name, type);
-			}
-			catch (KeyNotFoundException ex)
-			{
-				throw new KeyNotFoundException(String.Format(STR_RegistrationNotFoundFor, type), ex);
-			}
+		    return typeRegistry.Get(name, type);
 		}
 
 		/// <inheritdoc />
