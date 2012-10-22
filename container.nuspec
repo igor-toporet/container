@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>container</id>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
         <authors>Daniel Crenna</authors>
         <owners>Daniel Crenna</owners>
         <summary>A simple interface for function-descriptor style IoC containers.</summary>

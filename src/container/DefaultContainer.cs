@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Munq;
-using IDependencyResolver = container.IDependencyResolver;
 
 namespace container
 {
-    public class MunqContainer : IDependencyResolver, IDependencyRegistrar
+    public class DefaultContainer : IContainer
     {
         private readonly IocContainer _container;
-        public MunqContainer()
+        public DefaultContainer()
         {
             _container = new IocContainer();
         }
@@ -64,19 +63,19 @@ namespace container
         }
         public ILifetime Register<T>(Func<T> builder) where T : class
         {
-            return new MunqLifetime(_container.Register(r => builder()));
+            return new DefaultLifetime(_container.Register(r => builder()));
         }
         public ILifetime Register<T>(string name, Func<T> builder) where T : class
         {
-            return new MunqLifetime(_container.Register(name, r => builder()));
+            return new DefaultLifetime(_container.Register(name, r => builder()));
         }
         public ILifetime Register<T>(Func<IDependencyResolver, T> builder) where T : class
         {
-            return new MunqLifetime(_container.Register(r => builder(this)));
+            return new DefaultLifetime(_container.Register(r => builder(this)));
         }
         public ILifetime Register<T>(string name, Func<IDependencyResolver, T> builder) where T : class
         {
-            return new MunqLifetime(_container.Register(name, r => builder(this)));
+            return new DefaultLifetime(_container.Register(name, r => builder(this)));
         }
         public void Remove<T>() where T : class
         {

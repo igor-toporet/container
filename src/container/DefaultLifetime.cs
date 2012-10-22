@@ -2,10 +2,10 @@ using Munq;
 
 namespace container
 {
-    public class MunqLifetime : ILifetime
+    public class DefaultLifetime : ILifetime
     {
         private readonly IRegistration _registration;
-        public MunqLifetime(IRegistration registration)
+        public DefaultLifetime(IRegistration registration)
         {
             _registration = registration;
         }

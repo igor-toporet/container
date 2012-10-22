@@ -3,10 +3,15 @@ using System.Collections.Generic;
 
 namespace container
 {
-    public class Container : IDependencyResolver, IDependencyRegistrar
+    public class Container : IContainer
     {
         private readonly IDependencyResolver _resolver;
         private readonly IDependencyRegistrar _registrar;
+        public static Func<IContainer> DefaultContainer { get; set; }
+        static Container()
+        {
+            DefaultContainer = ()=> new DefaultContainer();
+        }
         public Container(IDependencyResolver resolver, IDependencyRegistrar registrar)
         {
             _resolver = resolver;
@@ -14,7 +19,7 @@ namespace container
         }
         public Container()
         {
-            var container = new MunqContainer();
+            var container = DefaultContainer();
             _resolver = container;
             _registrar = container;
         }
