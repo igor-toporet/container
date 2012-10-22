@@ -1,6 +1,10 @@
 # Container
 ## A simple interface for function-descriptor style IoC containers
 
+```
+PM> Install-Package container
+```
+
 ### Introduction
 IoC is an overwrought, stinky little skeleton in the static language closet. There, I said it.
 But it _is_ useful for distributing libraries when you want to allow consumers to swap the
@@ -9,7 +13,7 @@ abstraction I use to enable embedded dependency resolution.
 
 ### Features
 
-* Uses the function-descriptor style of registration, which, come on, is the nicest way.
+* Uses the function-descriptor style of registration, which, come on, is the nicest way
 * Low to no ceremony
 * Ships with Munq already embedded in it for a good default choice
 
@@ -18,13 +22,17 @@ abstraction I use to enable embedded dependency resolution.
 #### Registering and resolving
 
 ```csharp
-// TODO
+var container = new Container();
+container.Register<IFoo>(r => new Foo());
+container.Register<IBar>(r => new Bar(r.Resolve<IFoo>()));
+
+var bar = container.Resolve<IBar>();
 ```
 
 #### Swapping the container
 
 ```csharp
-// TODO
+Container.DefaultContainer = ()=> new MyAwesomeContainer();
 ```
 
 ### Why did you embed Munq?
